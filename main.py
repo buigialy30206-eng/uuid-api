@@ -20,7 +20,7 @@ class UUIDResult(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"service": "UUID Generator API", "version": "1.1.0"}
+    return {"service": "UUID Generator API", "version": "1.1.0", "related": ["Password Strength Checker API", "Random User Generator API"]}
 
 @app.get("/generate", response_model=UUIDResult)
 async def generate(version: int = Query(4, ge=1, le=4)):
