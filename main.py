@@ -9,8 +9,6 @@ from fastapi import FastAPI, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-app = FastAPI(title="UUID Generator API", version="1.0.0", dependencies=[Depends(_rate_limit)])
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 import time as _t, threading as _th
 _rl_win, _rl_max, _rl_hits, _rl_lk = 60, 60, {}, _th.Lock()
 
@@ -28,6 +26,9 @@ async def _rate_limit(request):
         else: _rl_hits[ip] = {'s': now, 'c': 1}
     return True
 
+app = FastAPI(title="UUID Generator API", version="1.0.0", dependencies=[Depends(_rate_limit)])
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
 @app.api_route("/health", methods=["GET", "HEAD"])
 async def health():
     return {"status": "ok"}
@@ -39,17 +40,6 @@ class UUIDResult(BaseModel):
     version: int
 
 
-@app.api_route("/health", methods=["GET", "HEAD"])
-async def health(): return {"status": "ok"}
-
-
-@app.get("/")
-async def root(): return {"service": "UUID Generator API", "version": "1.0.0"}
-
-
-@app.get("/generate", response_model=UUIDResult)
-async def generate(
-    version: int = Query(4, ge=1, le=4, description="UUID version: 1 (time-based) or 4 (random)"),
 ):
     if version == 1:
         val = str(uuid.uuid1())
