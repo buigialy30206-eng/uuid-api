@@ -14,16 +14,13 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 async def health():
     return {"status": "ok"}
 
-
 class UUIDResult(BaseModel):
     uuid: str
     version: int
 
-
 @app.get("/")
 async def root():
     return {"service": "UUID Generator API", "version": "1.1.0"}
-
 
 @app.get("/generate", response_model=UUIDResult)
 async def generate(version: int = Query(4, ge=1, le=4)):
@@ -32,7 +29,6 @@ async def generate(version: int = Query(4, ge=1, le=4)):
     else:
         val = str(uuid.uuid4())
     return UUIDResult(uuid=val, version=version)
-
 
 @app.get("/generate-batch")
 async def generate_batch(
